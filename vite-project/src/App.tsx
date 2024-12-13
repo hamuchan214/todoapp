@@ -8,11 +8,14 @@ type Todo = {
   removed: boolean;
 };
 
+type Filter = "all" | "checked" | "unchecked" | "removed";
+
 
 export const App = () => {
 
   const [text, setText] = useState("");
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [filter, setFilter] = useState<Filter>("all");
 
   const handleSubmit = () => {
     
@@ -73,8 +76,18 @@ export const App = () => {
     });
   }
 
+  const handleFilter = (filter: Filter) => {
+    setFilter(filter);
+  };
+
   return (
     <div>
+      <select defaultValue={"all"} onChange={(e) => handleFilter(e.target.value as Filter)}>
+        <option value={"all"}>すべてのタスク</option>
+        <option value={"checked"}>完了済みのタスク</option>
+        <option value={"unchecked"}>未完了のタスク</option>
+        <option value={"removed"}>削除済みのタスク</option>
+      </select>
       <form 
         onSubmit={(e) => {
           e.preventDefault();
