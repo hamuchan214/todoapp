@@ -1,4 +1,21 @@
 import React, { useState } from "react";
+import{
+  Container,
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  Typography,
+  Checkbox,
+  List,
+  ListItem,
+  IconButton,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import RestoreIcon from "@mui/icons-material/Restore";
+
 
 //"Todo型"の定義
 type Todo = {
@@ -30,10 +47,6 @@ export const App = () => {
     
     setTodos((todos) => [newTodo, ...todos]);
     setText("");
-  }
-
-  const handleChaneg = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value);
   }
 
   const handleEdit = (id: number, value: string) => {
@@ -101,66 +114,80 @@ export const App = () => {
   }
 
   return (
-    <div>
-      <select defaultValue={"all"} onChange={(e) => handleFilter(e.target.value as Filter)}>
-        <option value={"all"}>すべてのタスク</option>
-        <option value={"checked"}>完了済みのタスク</option>
-        <option value={"unchecked"}>未完了のタスク</option>
-        <option value={"removed"}>削除済みのタスク</option>
-      </select>
+    <Container>
+      <Typography>
+        Todo App
+      </Typography>
+      <FormControl fullWidth margin="normal">
+        <InputLabel id="filter-label">タスクのフィルター</InputLabel>
+        <Select
+          labelId="filter-label"
+          value={filter}
+          onChange={(e) => handleFilter(e.target.value as Filter)}
+        >
+          <MenuItem value="all">すべてのタスク</MenuItem>
+          <MenuItem value="checked">完了したタスク</MenuItem>
+          <MenuItem value="unchecked">未完了のタスク</MenuItem>
+          <MenuItem value="removed">削除されたタスク</MenuItem>
+        </Select>
+      </FormControl>
       {filter === "removed" ? 
       (
-        <button
+        <Button
+          variant="contained"
+          color="secondary"
           onClick={handleEmpty}
           disabled = {todos.filter((todo) => todo.removed).length === 0}  
         >
           削除済みのタスクを消去
-        </button>
+        </Button>
       ):
       (
-        filter !== "checked" && (
       <form 
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit();
           }}
           >
-        <input 
+        <TextField 
+          label="タスクの追加"
           type="text"
           value={text}
-          onChange={(e) => handleChaneg(e)}
+          onChange={(e) => setText(e.target.value)}
+          fullWidth
+          margin="normal"
         />
-        <input
+        <Button
+          variant="contained"
+          color="primary"
           type="submit"
-          value="追加"
-          onSubmit = {handleSubmit}
-        />
+        >
+          追加
+        </Button>
       </form>
       )
-    )}
-      <ul>
+    }
+      <List>
         {filteredTodos.map((todo) => {
           return (
-          <li key={todo.id}>
-            <input
-            type = "text"
+          <ListItem key={todo.id} divider>
+            <TextField
             disabled = {todo.checked || todo.removed}
             value = {todo.value}
             onChange={(e) => handleEdit(todo.id, e.target.value)}
             />
-            <input
-            type = "checkbox"
+            <Checkbox
             disabled = {todo.removed}
             checked = {todo.checked}
             onChange={() => handleCheck(todo.id, !todo.checked)}
             />
-            <button onClick={() => handleRemove(todo.id, !todo.removed)} >
-              {todo.removed ? "復元" : "削除"}
-              </button>
-          </li>
+            <IconButton onClick={() => handleRemove(todo.id, !todo.removed)} >
+              {todo.removed ? <RestoreIcon/> : <DeleteIcon/>}
+              </IconButton>
+          </ListItem>
           )
       })}
-      </ul>
-    </div>
+      </List>
+    </Container>
   );
 };
