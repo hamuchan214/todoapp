@@ -74,11 +74,31 @@ export const App = () => {
       });
       return newTodos;
     });
-  }
+  };
 
   const handleFilter = (filter: Filter) => {
     setFilter(filter);
   };
+
+  const filteredTodos = todos.filter((todo)=> {
+    switch(filter){
+      case "all":
+        return !todo.removed;
+      case "checked":
+        return todo.checked && !todo.removed;
+      case "removed":
+        return todo.removed;
+      case "unchecked":
+        return !todo.checked && !todo.removed;
+    
+    default:
+      return todo;
+    }
+  });
+
+  const handleEmpty = () => {
+    setTodos((todos) => todos.filter((todo) => !todo.removed));
+  }
 
   return (
     <div>
@@ -88,17 +108,38 @@ export const App = () => {
         <option value={"unchecked"}>未完了のタスク</option>
         <option value={"removed"}>削除済みのタスク</option>
       </select>
+      {filter === "removed" ? 
+      (
+        <button
+          onClick={handleEmpty}
+          disabled = {todos.filter((todo) => todo.removed).length === 0}  
+        >
+          削除済みのタスクを消去
+        </button>
+      ):
+      (
+        filter !== "checked" && (
       <form 
         onSubmit={(e) => {
           e.preventDefault();
           handleSubmit();
           }}
           >
-        <input type="text"  value={text}  onChange={(e) => handleChaneg(e)} />
-        <input  type="submit"  value="追加"  onSubmit = {handleSubmit}  />
+        <input 
+          type="text"
+          value={text}
+          onChange={(e) => handleChaneg(e)}
+        />
+        <input
+          type="submit"
+          value="追加"
+          onSubmit = {handleSubmit}
+        />
       </form>
+      )
+    )}
       <ul>
-        {todos.map((todo) => {
+        {filteredTodos.map((todo) => {
           return (
           <li key={todo.id}>
             <input
